@@ -157,3 +157,45 @@ function UploadImage($file, $path = null, $model, $relation_id, $update = false,
         return false;
     }
 }
+
+
+
+if (!function_exists('toggleModelBooleanField')) {
+    function toggleModelBooleanField(string $modelClass, $id, string $field = 'status')
+    {
+        try {
+            /** @var Model|null $model */
+            $model = $modelClass::find($id);
+
+            if (!$model) {
+                return [
+                    'success' => false,
+                    'message' => 'Item not found.',
+                    'errors' => ['id' => ['Item with ID ' . $id . ' not found.']],
+                    'status' => 404
+                ];
+            }
+
+            $model->update([
+                $field => !$model->$field
+            ]);
+
+            return [
+                'success' => true,
+                'message' => ucfirst($field) . ' toggled successfully.',
+                'data' => [
+                    'id' => $model->id,
+                    'new_status' => $model->fresh()->$field
+                ],
+                'status' => 200
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'An error occurred while toggling ' . $field . '.',
+                'errors' => ['server' => [$e->getMessage()]],
+                'status' => 500
+            ];
+        }
+    }
+}

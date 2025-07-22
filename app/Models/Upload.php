@@ -15,7 +15,7 @@ class Upload extends Model
 }
 
     protected $guarded = [];
-    protected $hidden = ['type', 'created_at', 'updated_at' , 'relation_id' , 'relation_type'];
+    protected $hidden = ['type', 'created_at', 'updated_at' , 'relation_id' , 'relation_type' ,'extension' , 'filename' , 'name'];
 
     const IMAGE = 1;
     const VIDEO = 2;

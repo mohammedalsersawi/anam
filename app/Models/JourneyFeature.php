@@ -11,5 +11,6 @@ class JourneyFeature extends Model
     use HasFactory, HasTranslations;
 
     protected $translatable = ['feature'];
-    protected $fillable = ['feature' , 'journey_section_id'];
+    protected $fillable = ['feature', 'journey_section_id'];
+    protected $hidden = ['created_at', 'updated_at'];
 }

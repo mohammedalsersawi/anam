@@ -95,4 +95,6 @@ class NavigationLinkController extends Controller
             return mainResponse(false, 'Failed to toggle status: ' . $e->getMessage(), [], [], 500);
         }
     }
+
+
 }
