@@ -13,8 +13,7 @@ class ServiceSectionController extends Controller
     public function index()
     {
         try {
-            $services = ServiceSection::where('status', 1)
-                ->orderBy('created_at', 'desc')
+            $services = ServiceSection::orderBy('created_at', 'desc')
                 ->paginate(10);
 
             if ($services->isEmpty()) {

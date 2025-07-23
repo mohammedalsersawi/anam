@@ -12,8 +12,7 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            $categories = Category::where('status', 1)
-                ->orderBy('created_at', 'desc')
+            $categories = Category::orderBy('created_at', 'desc')
                 ->paginate(10);
 
             if ($categories->isEmpty()) {
@@ -91,9 +90,25 @@ class CategoryController extends Controller
         }
     }
 
+
+
     public function updateStatus($id)
     {
         $result = toggleModelBooleanField(Category::class, $id, 'status');
+        $newStatus = data_get($result, 'data.new_status');
+        if ($result['success'] && $newStatus === 0) {
+            $category = Category::find($id);
+            if ($category) {
+                switch ($category->type) {
+                    case 1:
+                        \App\Models\Test::where('category_id', $category->id)->update(['status' => 0]);
+                        break;
+                    case 2:
+                        \App\Models\Course::where('category_id', $category->id)->update(['status' => 0]);
+                        break;
+                }
+            }
+        }
         return mainResponse($result['success'], $result['message'], $result['data'] ?? [], $result['errors'] ?? [], $result['status'], null, false);
     }
 }

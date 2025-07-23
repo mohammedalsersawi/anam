@@ -6,8 +6,8 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::group(
     [
-        'prefix' =>'admin',
-        'middleware' => [ 'localizationRedirect', 'localeViewPath']
+        'prefix' => 'admin',
+        'middleware' => ['localizationRedirect', 'localeViewPath']
     ],
     function () {
         Route::controller(\App\Http\Controllers\Api\Auth\Admin\AuthController::class)->group(function () {
@@ -55,6 +55,13 @@ Route::group(
             Route::put('/updateStatus/{id}', 'updateStatus');
         });
         Route::controller(\App\Http\Controllers\Api\Admin\Tests\TestController::class)->prefix('tests')->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::delete('destroy/{id}', 'destroy');
+            Route::get('/index', 'index');
+            Route::put('/updateStatus/{id}', 'updateStatus');
+        });
+        Route::controller(\App\Http\Controllers\Api\Admin\Course\CourseController::class)->prefix('courses')->group(function () {
             Route::post('/store', 'store');
             Route::post('/update/{id}', 'update');
             Route::delete('destroy/{id}', 'destroy');

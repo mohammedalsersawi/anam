@@ -1,77 +1,73 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin\Tests;
+namespace App\Http\Controllers\Api\Admin\Course;
 
-use App\Models\Test;
+use App\Models\Course;
 use App\Models\Upload;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTestRequest;
-use App\Http\Requests\UpdateTestRequest;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreCourseRequest;
+use App\Http\Requests\UpdateCourseRequest;
 
-class TestController extends Controller
+class CourseController extends Controller
 {
     public function index()
     {
         try {
-            $tests = Test::orderBy('created_at', 'desc')
+            $course = Course::orderBy('created_at', 'desc')
+                ->with('category:id,name')
                 ->paginate(10);
-
-            if ($tests->isEmpty()) {
+            if ($course->isEmpty()) {
                 return mainResponse(false, 'No active services found.', [], [], 404, null, false);
             }
-
-            return mainResponse(true, 'Fetched category sections successfully.', compact('tests'), [], 200);
+            return mainResponse(true, 'Fetched Courses sections successfully.', compact('course'), [], 200);
         } catch (\Exception $e) {
             return mainResponse(false, 'Failed to fetch service sections.', [], ['server' => [$e->getMessage()]], 500, null, false);
         }
     }
-    public function store(StoreTestRequest  $request)
+    public function store(StoreCourseRequest  $request)
     {
         try {
             $data = localizedRequestData(
                 $request,
                 ['title', 'description'],
-                ['price', 'rating', 'questions_count', 'age_from', 'age_to', 'status', 'category_id', 'rating_count']
+                ['price', 'rating', 'rating_count', 'hours', 'age_from', 'age_to', 'status', 'category_id'] // الحقول العادية
             );
-            $test = Test::create($data);
+            $course = Course::create($data);
             if ($request->has('image')) {
-                UploadImage($request->image, Test::PATH_IMAGE, Test::class, $test->id, true, null, Upload::IMAGE);
+                UploadImage($request->image, Course::PATH_IMAGE, Course::class, $course->id, true, null, Upload::IMAGE);
             }
-            return mainResponse(true, 'Test created successfully.', compact('test'), [], 201, null, false);
+            return mainResponse(true, 'Test created successfully.', compact('course'), [], 201, null, false);
         } catch (\Exception $e) {
             return mainResponse(false, 'Something went wrong.', [], ['server' => [$e->getMessage()]], 500, null, false);
         }
     }
-
-    public function update(UpdateTestRequest $request, $id)
+    public function update(UpdateCourseRequest  $request, $id)
     {
         try {
-            $test = Test::findOrFail($id);
-
+            $course = Course::findOrFail($id);
             $data = localizedRequestData(
                 $request,
                 ['title', 'description'],
-                ['price', 'rating', 'questions_count', 'age_from', 'age_to', 'status', 'category_id', 'rating_count']
+                ['price', 'rating', 'rating_count', 'hours', 'age_from', 'age_to', 'status', 'category_id'] // الحقول العادية
             );
-
-            $test->update($data);
+            $course->update($data);
 
             if ($request->has('image')) {
-                UploadImage($request->image, Test::PATH_IMAGE, Test::class, $test->id, true, null, Upload::IMAGE);
+                UploadImage($request->image, Course::PATH_IMAGE, Course::class, $course->id, true, null, Upload::IMAGE);
             }
 
-            return mainResponse(true, 'Test updated successfully.', compact('test'), [], 200, null, false);
+            return mainResponse(true, 'Test created successfully.', compact('course'), [], 201, null, false);
         } catch (\Exception $e) {
             return mainResponse(false, 'Something went wrong.', [], ['server' => [$e->getMessage()]], 500, null, false);
         }
     }
+
 
     public function destroy($id)
     {
         try {
-            $test = Test::find($id);
+            $test = Course::find($id);
             if (!$test) {
                 return mainResponse(false, 'Test section not found.', [], [], 404, null, false);
             }
@@ -83,7 +79,7 @@ class TestController extends Controller
     }
     public function updateStatus($id)
     {
-        $result = toggleModelBooleanField(Test::class, $id, 'status');
+        $result = toggleModelBooleanField(Course::class, $id, 'status');
         return mainResponse($result['success'], $result['message'], $result['data'] ?? [], $result['errors'] ?? [], $result['status'], null, false);
     }
 }

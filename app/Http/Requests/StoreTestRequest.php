@@ -27,6 +27,7 @@ class StoreTestRequest extends FormRequest
             'status'           => 'required|in:0,1',
             'rating_count'     => 'nullable|integer|min:0',
             'category_id'      => 'required|exists:categories,id',
+            'image'         => 'required|image',
         ])->all();
     }
 }

@@ -16,4 +16,8 @@ class Category extends Model
         'type',
     ];
     protected $hidden = ['created_at', 'updated_at'];
+    protected $casts = [
+    'name' => 'array',
+];
+
 }

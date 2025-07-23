@@ -17,7 +17,6 @@ class HeroSectionController extends Controller
     {
         try {
             $heroes = HeroSection::with('imageHero')
-                ->where('status', 1)
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
             if ($heroes->isEmpty()) {
