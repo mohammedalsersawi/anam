@@ -30,21 +30,35 @@ Route::group(
             Route::post('/store', 'store');
             Route::post('/update/{id}', 'update');
             Route::delete('destroy/{id}', 'destroy');
-            Route::get('/getData', 'getData');
+            Route::get('/index', 'index');
             Route::put('/updateStatus/{id}', 'updateStatus');
         });
         Route::controller(\App\Http\Controllers\Api\Admin\LandPage\JourneySectionController::class)->prefix('journey')->group(function () {
             Route::post('/store', 'store');
             Route::post('/update/{id}', 'update');
             Route::delete('destroy/{id}', 'destroy');
-            Route::get('/getData', 'getData');
+            Route::get('/index', 'index');
             Route::put('/updateStatus/{id}', 'updateStatus');
         });
         Route::controller(\App\Http\Controllers\Api\Admin\LandPage\ServiceSectionController::class)->prefix('service')->group(function () {
             Route::post('/store', 'store');
             Route::post('/update/{id}', 'update');
             Route::delete('destroy/{id}', 'destroy');
-            Route::get('/getData', 'getData');
+            Route::get('/index', 'index');
+            Route::put('/updateStatus/{id}', 'updateStatus');
+        });
+        Route::controller(\App\Http\Controllers\Api\Admin\Category\CategoryController::class)->prefix('category')->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::delete('destroy/{id}', 'destroy');
+            Route::get('/index', 'index');
+            Route::put('/updateStatus/{id}', 'updateStatus');
+        });
+        Route::controller(\App\Http\Controllers\Api\Admin\Tests\TestController::class)->prefix('tests')->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::delete('destroy/{id}', 'destroy');
+            Route::get('/index', 'index');
             Route::put('/updateStatus/{id}', 'updateStatus');
         });
     }

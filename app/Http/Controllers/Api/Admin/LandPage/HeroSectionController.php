@@ -13,15 +13,23 @@ use Illuminate\Support\Facades\Validator;
 class HeroSectionController extends Controller
 {
 
-    public function getData()
+    public function index()
     {
-        $hero = HeroSection::with('imageHero')
-            ->where('status', 1)
-            ->latest()
-            ->first();
-
-        return mainResponse(true, 'done', compact('hero'), [], 200, null, false);
+        try {
+            $heroes = HeroSection::with('imageHero')
+                ->where('status', 1)
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+            if ($heroes->isEmpty()) {
+                return mainResponse(false, 'No hero sections found.', [], [], 404, null, false);
+            }
+            return mainResponse(true, 'Hero sections fetched successfully.', compact('heroes'), [], 200);
+        } catch (\Exception $e) {
+            return mainResponse(false, 'Failed to fetch hero sections.', [], ['server' => [$e->getMessage()]], 500, null, false);
+        }
     }
+
+
     public function store(Request $request)
     {
         try {
@@ -129,3 +137,16 @@ class HeroSectionController extends Controller
         }
     }
 }
+
+
+
+
+    // public function getData()
+    // {
+    //     $hero = HeroSection::with('imageHero')
+    //         ->where('status', 1)
+    //         ->latest()
+    //         ->first();
+
+    //     return mainResponse(true, 'done', compact('hero'), [], 200, null, false);
+    // }

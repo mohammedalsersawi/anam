@@ -11,18 +11,10 @@ class HeroSection extends Model
 {
     use HasFactory, HasTranslations;
 
-    protected $translatable = [
-        'title',
-        'description',
-        'button_text',
-    ];
-    protected $fillable = [
-        'title',
-        'description',
-        'button_text',
-        'button_link',
-        'status',
-    ];
+    protected $translatable = ['title', 'description', 'button_text',];
+    protected $fillable = ['title', 'description', 'button_text', 'button_link', 'status'];
+    protected $hidden = ['created_at', 'updated_at'];
+
     public function imageHero()
     {
         return $this->morphOne(Upload::class, 'relation')->select('id', 'path', 'relation_id', 'relation_type');

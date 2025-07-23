@@ -13,22 +13,24 @@ use Illuminate\Support\Facades\Validator;
 class JourneySectionController extends Controller
 {
 
-    public function getData()
+    public function index()
     {
         try {
-            $journe = JourneySection::with(['features', 'images'])
+            $journeys = JourneySection::with(['features' ,'images'])
                 ->latest()
-                ->first();
+                ->paginate(10);
 
-            if (!$journe) {
-                return mainResponse(false, 'There is no section yet.', [], [], 404, null, false);
+            if ($journeys->isEmpty()) {
+                return mainResponse(false, 'No journey sections found.', [], [], 404, null, false);
             }
 
-            return mainResponse(true, 'Data fetched successfully.', compact('journe'), [], 200, null, false);
+            return mainResponse(true, 'Data fetched successfully.', compact('journeys'), [], 200);
         } catch (\Exception $e) {
             return mainResponse(false, 'Something went wrong.', [], ['server' => [$e->getMessage()]], 500, null, false);
         }
     }
+
+
 
 
     public function store(Request $request)
@@ -169,3 +171,22 @@ class JourneySectionController extends Controller
         return mainResponse(true, 'Journey Section deleted successfully.', [], [], 200);
     }
 }
+
+
+
+// public function getData()
+//     {
+//         try {
+//             $journe = JourneySection::with(['features', 'images'])
+//                 ->latest()
+//                 ->first();
+
+//             if (!$journe) {
+//                 return mainResponse(false, 'There is no section yet.', [], [], 404, null, false);
+//             }
+
+//             return mainResponse(true, 'Data fetched successfully.', compact('journe'), [], 200, null, false);
+//         } catch (\Exception $e) {
+//             return mainResponse(false, 'Something went wrong.', [], ['server' => [$e->getMessage()]], 500, null, false);
+//         }
+//     }

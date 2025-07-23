@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('service_sections', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->text('title');
-            $table->text('description');
-            $table->string('icon')->nullable();
-            $table->text('button_text')->nullable();
-            $table->string('button_link')->nullable();
+            $table->string('name');
+            $table->integer('type')->comment('1 = test, 2 = course', 'store');
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('service_sections');
+        Schema::dropIfExists('categories');
     }
 };

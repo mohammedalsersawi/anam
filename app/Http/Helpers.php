@@ -5,6 +5,7 @@ use App\Models\Upload;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Illuminate\Http\Request;
 
 function mainResponse($status, $msg, $items, $validator, $code = 200, $pages = null, $showPages = true)
 {
@@ -197,5 +198,32 @@ if (!function_exists('toggleModelBooleanField')) {
                 'status' => 500
             ];
         }
+    }
+}
+
+
+
+
+
+if (!function_exists('localizedRequestData')) {
+    /**
+     * Generate structured multilingual and static request data for storing in JSON fields.
+     *
+     * @param Request $request
+     * @param array $localizedFields Fields that should be treated as multilingual (e.g., title, description)
+     * @param array $normalFields Fields to take directly from the request (e.g., price, status)
+     * @return array
+     */
+    function localizedRequestData(Request $request, array $localizedFields, array $normalFields): array
+    {
+        $data = [];
+
+        foreach ($localizedFields as $field) {
+            foreach (locales() as $key => $language) {
+                $data[$field][$key] = $request->get("{$field}_{$key}");
+            }
+        }
+
+        return collect($data)->merge($request->only($normalFields))->all();
     }
 }

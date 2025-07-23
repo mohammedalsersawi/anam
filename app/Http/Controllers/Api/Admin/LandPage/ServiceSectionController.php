@@ -10,19 +10,23 @@ use Illuminate\Support\Facades\Validator;
 class ServiceSectionController extends Controller
 {
 
-    public function getData()
+    public function index()
     {
         try {
             $services = ServiceSection::where('status', 1)
                 ->orderBy('created_at', 'desc')
-                ->take(4)
-                ->get();
+                ->paginate(10);
 
-            return mainResponse(true, 'Fetched service sections successfully.', compact('services'), [], 200, null, false);
+            if ($services->isEmpty()) {
+                return mainResponse(false, 'No active services found.', [], [], 404, null, false);
+            }
+
+            return mainResponse(true, 'Fetched service sections successfully.', compact('services'), [], 200);
         } catch (\Exception $e) {
-            return mainResponse(false, 'Failed to fetch service sections.', [], ['server' => [$e->getMessage()]], 500);
+            return mainResponse(false, 'Failed to fetch service sections.', [], ['server' => [$e->getMessage()]], 500, null, false);
         }
     }
+
 
     public function store(Request $request)
     {
@@ -108,3 +112,19 @@ class ServiceSectionController extends Controller
         return mainResponse($result['success'], $result['message'], $result['data'] ?? [], $result['errors'] ?? [], $result['status'], null, false);
     }
 }
+
+
+
+ // public function getData()
+    // {
+    //     try {
+    //         $services = ServiceSection::where('status', 1)
+    //             ->orderBy('created_at', 'desc')
+    //             ->take(4)
+    //             ->get();
+
+    //         return mainResponse(true, 'Fetched service sections successfully.', compact('services'), [], 200, null, false);
+    //     } catch (\Exception $e) {
+    //         return mainResponse(false, 'Failed to fetch service sections.', [], ['server' => [$e->getMessage()]], 500);
+    //     }
+    // }
