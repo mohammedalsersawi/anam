@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('features', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('section_id');
+            $table->string('section_type');
+            $table->json('sub_title');
+            $table->json('description');
+            $table->string('icon')->nullable();
+            $table->string('button_text')->nullable();
+            $table->string('button_link')->nullable();
             $table->timestamps();
         });
     }

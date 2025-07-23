@@ -22,5 +22,7 @@ class ServiceSection extends Model
         'status',
         'icon',
     ];
+        const PATH_IMAGE = "/upload/ Services/";
+
     protected $hidden = ['created_at', 'updated_at'];
 }

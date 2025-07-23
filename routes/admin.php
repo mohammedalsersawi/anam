@@ -68,5 +68,12 @@ Route::group(
             Route::get('/index', 'index');
             Route::put('/updateStatus/{id}', 'updateStatus');
         });
+        Route::controller(\App\Http\Controllers\Api\Admin\LandPage\FeatureController::class)->prefix('features')->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::delete('destroy/{id}', 'destroy');
+            Route::get('/index', 'index');
+            Route::put('/updateStatus/{id}', 'updateStatus');
+        });
     }
 );
