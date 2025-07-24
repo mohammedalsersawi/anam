@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('relation_id');
             $table->string('relation_type');
             $table->string('extension');
-            $table->tinyInteger('type');
+            $table->tinyInteger('type')->comment('1 = IMAGE, 2 = VIDEO');;
             $table->timestamps();
         });
     }

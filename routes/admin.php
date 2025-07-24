@@ -86,8 +86,10 @@ Route::group(
         Route::controller(\App\Http\Controllers\Api\Admin\ContactMessage\ContactMessageController::class)->prefix('contactInfo')->group(function () {
             Route::get('/getMessages', 'getMessages');
         });
+        Route::controller(\App\Http\Controllers\Api\Admin\SuccessStorie\SuccessStorieController::class)->prefix('successStorie')->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::get('/getData', 'getData');
+        });
     }
 );
-
-
-

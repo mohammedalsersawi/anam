@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('success_stories', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('url_video');
             $table->timestamps();
         });
     }
