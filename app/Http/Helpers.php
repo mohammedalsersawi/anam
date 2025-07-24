@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Support\Arrayable;
 
 function mainResponse($status, $msg, $items, $validator, $code = 200, $pages = null, $showPages = true)
 {
@@ -294,4 +295,88 @@ if (!function_exists('localizedRequestData')) {
 
         return collect($data)->merge($request->only($normalFields))->all();
     }
+}
+
+
+
+
+/**
+ * تجهيز البيانات المترجمة + الحقول الثابتة + العلاقات الجانبية.
+ *
+ * @param Illuminate\Database\Eloquent\Model|Arrayable $model
+ * @param array $translatableFields أسماء الحقول المترجمة مثل ['title', 'description']
+ * @param array $extraFields أسماء الحقول العادية التي تريد إضافتها كما هي
+ * @param array $relationsMap علاقات بصيغة ['image' => 'image', 'features' => 'features']
+ * @return array
+ */
+function formatTranslatableData($model, array $translatableFields, array $extraFields = [], array $relationsMap = []): array
+{
+    $locale = app()->getLocale();
+    $data = [];
+
+    // ✅ الحقول المترجمة
+    foreach ($translatableFields as $field) {
+        if (method_exists($model, 'getTranslation')) {
+            $data[$field] = $model->getTranslation($field, $locale);
+        } else {
+            $data[$field] = $model->$field ?? null;
+        }
+    }
+
+    // ✅ الحقول العادية
+    foreach ($extraFields as $field) {
+        $data[$field] = $model->$field ?? null;
+    }
+
+    // ✅ العلاقات
+    foreach ($relationsMap as $relationName => $outputField) {
+        $relation = $model->$relationName ?? null;
+
+        if ($relation instanceof \Illuminate\Support\Collection) {
+            $data[$outputField] = $relation->map(function ($item) use ($locale) {
+                // 1️⃣ formatForApi إن وجد
+                if (method_exists($item, 'formatForApi')) {
+                    return $item->formatForApi();
+                }
+
+                // 2️⃣ path (مثلاً صور)
+                if (isset($item->path)) {
+                    return asset('storage/' . $item->path);
+                }
+
+                // 3️⃣ الترجمة الذكية
+                $result = [];
+
+                // ✅ الحقول المترجمة لو كانت موجودة
+                if (property_exists($item, 'translatable') && is_array($item->translatable)) {
+                    foreach ($item->translatable as $field) {
+                        if (method_exists($item, 'getTranslation')) {
+                            $result[$field] = $item->getTranslation($field, $locale);
+                        }
+                    }
+                }
+
+                // ✅ باقي الحقول العادية
+                foreach ($item->getAttributes() as $key => $value) {
+                    if (!array_key_exists($key, $result) && $key !== 'pivot') {
+                        $result[$key] = $value;
+                    }
+                }
+
+                return $result;
+            })->toArray();
+        } elseif ($relation instanceof \Illuminate\Database\Eloquent\Model) {
+            if (method_exists($relation, 'formatForApi')) {
+                $data[$outputField] = $relation->formatForApi();
+            } elseif (isset($relation->path)) {
+                $data[$outputField] = asset('storage/' . $relation->path);
+            } else {
+                $data[$outputField] = $relation;
+            }
+        } else {
+            $data[$outputField] = null;
+        }
+    }
+
+    return $data;
 }

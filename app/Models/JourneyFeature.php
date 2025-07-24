@@ -13,4 +13,13 @@ class JourneyFeature extends Model
     protected $translatable = ['feature'];
     protected $fillable = ['feature', 'journey_section_id'];
     protected $hidden = ['created_at', 'updated_at'];
+
+    protected $casts = [
+        'feature' => 'array',
+    ];
+
+    public function formatForApi()
+    {
+        return $this->getTranslation('feature', app()->getLocale());
+    }
 }

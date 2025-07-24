@@ -26,7 +26,7 @@ class ServiceSection extends Model
     ];
     const PATH_IMAGE = "/upload/Services/";
 
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at' ,'button_link'];
 
     public function features()
     {

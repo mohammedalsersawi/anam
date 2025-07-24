@@ -28,4 +28,16 @@ class FeatureSection extends Model
     {
         return $this->morphOne(Upload::class, 'relation')->select('id', 'path', 'relation_id', 'relation_type');
     }
+
+    public function formatForApi()
+    {
+        $locale = app()->getLocale();
+
+        return [
+            'sub_title'   => $this->getTranslation('sub_title', $locale),
+            'description' => $this->getTranslation('description', $locale),
+            'icon'        => $this->icon,
+            'id'        => $this->id,
+        ];
+    }
 }

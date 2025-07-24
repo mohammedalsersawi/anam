@@ -19,11 +19,12 @@ class FeatureController extends Controller
 
         return mainResponse(true, 'Feature sections fetched.', compact('sections'), [], 200, null, false);
     }
-    public function store(StoreFeatureRequest $request)
+    public function store(Request $request)
     {
         try {
             $title_ar = $request->input('title_ar') ?? $request->json('title_ar');
             $title_en = $request->input('title_en') ?? $request->json('title_en');
+            $status   = $request->input('status') ?? $request->json('status');
             $items    = $request->input('items') ?? $request->json('items');
             $data = [
                 'title' => [
@@ -42,14 +43,12 @@ class FeatureController extends Controller
                     'sub_title'    => $item['sub_title'] ?? [],
                     'description'  => $item['description'] ?? [],
                     'icon'         => $item['icon'] ?? null,
-                    'button_text'  => $item['button_text'] ?? null,
-                    'button_link'  => $item['button_link'] ?? null,
+                    'button_text'  => $item['button_text'] ?? [],
                 ]);
             }
-
-            return mainResponse(true, 'Feature section created successfully.', compact('featureSection'), [], 201, null ,false);
+            return mainResponse(true, 'Service section created successfully.', compact('featureSection'), [], 201);
         } catch (\Exception $e) {
-            return mainResponse(false, 'Failed to store feature section.', [], ['server' => [$e->getMessage()]], 500 ,null ,false);
+            return mainResponse(false, 'Failed to store service section.', [], ['server' => [$e->getMessage()]], 500);
         }
     }
 

@@ -38,9 +38,9 @@ class HeroSectionController extends Controller
                 $rules['description_' . $key] = 'required|string';
                 $rules['button_text_' . $key] = 'required|string|max:100';
             }
-            $rules['button_link'] = 'required|string|max:255';
+            // $rules['button_link'] = 'required|string|max:255';
             $rules['status'] = 'required|in:0,1';
-            $rules['image'] = 'required|mimes:jpeg,jpg,png';
+            $rules['image'] = 'required|min:1';
 
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -52,7 +52,7 @@ class HeroSectionController extends Controller
                 $data['description'][$key] = $request->get('description_' . $key);
                 $data['button_text'][$key] = $request->get('button_text_' . $key);
             }
-            $data['button_link'] = $request->button_link;
+            // $data['button_link'] = $request->button_link;
             $hero = HeroSection::create($data);
             if ($request->has('image')) {
                 UploadImage($request->image, HeroSection::PATH_IMAGE, HeroSection::class, $hero->id, true, null, Upload::IMAGE);
@@ -74,9 +74,9 @@ class HeroSectionController extends Controller
                 $rules['description_' . $key] = 'required|string';
                 $rules['button_text_' . $key] = 'required|string|max:100';
             }
-            $rules['button_link'] = 'required|string|max:255';
+            // $rules['button_link'] = 'required|string|max:255';
             $rules['status'] = 'required|in:0,1';
-            $rules['image'] = 'nullable|mimes:jpeg,jpg,png';
+            $rules['image'] = 'nullable|min:1';
 
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -89,7 +89,7 @@ class HeroSectionController extends Controller
                 $data['description'][$key] = $request->get('description_' . $key);
                 $data['button_text'][$key] = $request->get('button_text_' . $key);
             }
-            $data['button_link'] = $request->button_link;
+            // $data['button_link'] = $request->button_link;
             $data['status'] = $request->status;
 
             $hero->update($data);

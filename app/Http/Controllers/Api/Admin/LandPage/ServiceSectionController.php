@@ -9,6 +9,7 @@ use App\Models\ServiceSection;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreServiceRequest;
+use App\Http\Requests\UpdateServiceRequest;
 
 class ServiceSectionController extends Controller
 {
@@ -44,7 +45,6 @@ class ServiceSectionController extends Controller
                     'description'  => $item['description'] ?? [],
                     'icon'         => $item['icon'] ?? null,
                     'button_text'  => $item['button_text'] ?? [],
-                    'button_link'  => $item['button_link'] ?? null,
                 ]);
             }
             return mainResponse(true, 'Service section created successfully.', compact('serviceSection'), [], 201);
@@ -54,7 +54,7 @@ class ServiceSectionController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function update(UpdateServiceRequest $request, $id)
     {
         try {
             // جلب السجل القديم
@@ -83,7 +83,6 @@ class ServiceSectionController extends Controller
                     'description'  => $item['description'] ?? [],
                     'icon'         => $item['icon'] ?? null,
                     'button_text'  => $item['button_text'] ?? [],
-                    'button_link'  => $item['button_link'] ?? null,
                 ]);
             }
             return mainResponse(true, 'Service section updated successfully.', compact('serviceSection'), [], 200);

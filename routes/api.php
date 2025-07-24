@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::prefix('auth')->group(function () {
     Route::post('/login', [\App\Http\Controllers\User\Auth\AuthController::class, 'login']);
@@ -18,5 +19,13 @@ Route::prefix('auth')->group(function () {
 
 Route::post('/contact-messages', [\App\Http\Controllers\Api\Admin\ContactMessage\ContactMessageController::class, 'storeMessage']);
 
+
+Route::prefix('{locale}')->middleware(['localeViewPath'])->group(function () {
+    Route::controller(\App\Http\Controllers\Api\User\MainController::class)
+        ->group(function () {
+            Route::get('/heroSection', 'heroSection');
+            Route::get('/SuccessStorie', 'SuccessStorie');
+        });
+});
 
 require base_path('routes/admin.php');

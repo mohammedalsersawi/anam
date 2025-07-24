@@ -26,4 +26,28 @@ class Feature extends Model
     {
         return $this->morphTo();
     }
+
+
+    public function formatForApi()
+{
+    $locale = app()->getLocale();
+
+    // نتحقق إذا العلاقة محملة
+    $sectionType = $this->section_type;
+
+    $data = [
+        'sub_title'   => $this->getTranslation('sub_title', $locale),
+        'description' => $this->getTranslation('description', $locale),
+        'icon'        => $this->icon,
+        'id'          => $this->id,
+    ];
+
+    // نضيف button_text فقط إذا كانت من ServiceSection
+    if ($sectionType === \App\Models\ServiceSection::class) {
+        $data['button_text'] = $this->getTranslation('button_text', $locale);
+    }
+
+    return $data;
+}
+
 }

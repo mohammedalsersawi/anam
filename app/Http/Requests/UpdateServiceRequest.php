@@ -36,7 +36,7 @@ class UpdateServiceRequest extends FormRequest
             'items.*.description' => 'required|array',
             'items.*.icon'        => 'nullable|string',
             'items.*.button_text' => 'nullable|array',
-            'items.*.button_link' => 'nullable|string|url',
+            // 'items.*.button_link' => 'nullable|string|url',
         ]);
 
         // نضيف التحقق من اللغات داخل الحقول المترجمة

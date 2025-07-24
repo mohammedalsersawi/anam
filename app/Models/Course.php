@@ -26,9 +26,14 @@ class Course extends Model
     ];
 
 
-   // In Course.php model
-public function category()
-{
-    return $this->belongsTo(Category::class);
-}
+    // In Course.php model
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function image()
+    {
+        return $this->morphOne(Upload::class, 'relation')->select('id', 'path', 'relation_id', 'relation_type');
+    }
 }

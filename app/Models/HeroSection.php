@@ -13,7 +13,7 @@ class HeroSection extends Model
 
     protected $translatable = ['title', 'description', 'button_text',];
     protected $fillable = ['title', 'description', 'button_text', 'button_link', 'status'];
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at' ,'button_link'];
 
     public function imageHero()
     {

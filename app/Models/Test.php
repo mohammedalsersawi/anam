@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Upload;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Test extends Model
 {
@@ -24,4 +25,9 @@ class Test extends Model
         'rating_count',
         'category_id',
     ];
+
+    public function image()
+    {
+        return $this->morphOne(Upload::class, 'relation')->select('id', 'path', 'relation_id', 'relation_type');
+    }
 }
