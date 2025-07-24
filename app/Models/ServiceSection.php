@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Upload;
+use App\Models\Feature;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ServiceSection extends Model
 {
@@ -22,7 +24,17 @@ class ServiceSection extends Model
         'status',
         'icon',
     ];
-        const PATH_IMAGE = "/upload/ Services/";
+    const PATH_IMAGE = "/upload/ Services/";
 
     protected $hidden = ['created_at', 'updated_at'];
+
+    public function features()
+    {
+        return $this->morphMany(Feature::class, 'section');
+    }
+
+     public function image()
+    {
+        return $this->morphOne(Upload::class, 'relation')->select('id', 'path', 'relation_id', 'relation_type');
+    }
 }

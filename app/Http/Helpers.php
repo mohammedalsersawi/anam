@@ -98,9 +98,77 @@ function locales()
     }
     return $arr;
 }
+function UploadImage($file, $path = null, $model, $relation_id, $update = false, $id = null, $type, $name = null, $deleteOldImages = false)
+{
+    try {
+        $originalName = $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
+        $newName = 'p' . rand() . time() . '.' . $extension;
+
+        $cleanPath = ltrim($path, '/');
+        Storage::disk('public')->putFileAs($cleanPath, $file, $newName);
+
+        $fullOriginalPath = asset('storage/' . $cleanPath . $newName);
+        $relativePath = $cleanPath . $newName;
+
+        $data = [
+            'name' => $name ?? $originalName,
+            'filename' => $newName,
+            'full_original_path' => $fullOriginalPath,
+            'path' => $relativePath,
+            'relation_id' => $relation_id,
+            'relation_type' => $model,
+            'type' => $type,
+            'extension' => $extension,
+        ];
+
+        // حذف الصور القديمة إذا طُلب ذلك
+        if ($deleteOldImages) {
+            $oldImages = Upload::where('relation_id', $relation_id)
+                ->where('relation_type', $model)
+                ->where('type', $type)
+                ->get();
+
+            foreach ($oldImages as $img) {
+                if (Storage::disk('public')->exists($img->path)) {
+                    Storage::disk('public')->delete($img->path);
+                }
+                $img->delete();
+            }
+        }
+
+        if (!$update) {
+            return Upload::create($data);
+        } else {
+            $query = Upload::query()
+                ->where('relation_id', $relation_id)
+                ->where('relation_type', $model);
+
+            if ($name) {
+                $query->where('name', $name);
+            } else {
+                $query->where('type', $type);
+            }
+
+            $image = $id ? Upload::find($id) : $query->first();
+
+            if ($image) {
+                if (Storage::disk('public')->exists($image->path)) {
+                    Storage::disk('public')->delete($image->path);
+                }
+                $image->update($data);
+                return $relativePath;
+            } else {
+                return Upload::create($data);
+            }
+        }
+    } catch (\Exception $e) {
+        return false;
+    }
+}
 
 
-function UploadImage($file, $path = null, $model, $relation_id, $update = false, $id = null, $type, $name = null)
+function UploadImageOld($file, $path = null, $model, $relation_id, $update = false, $id = null, $type, $name = null)
 {
     try {
         $originalName = $file->getClientOriginalName();

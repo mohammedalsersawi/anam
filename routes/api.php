@@ -16,4 +16,7 @@ Route::prefix('auth')->group(function () {
 });
 
 
+Route::post('/contact-messages', [\App\Http\Controllers\Api\Admin\ContactMessage\ContactMessageController::class, 'storeMessage']);
+
+
 require base_path('routes/admin.php');

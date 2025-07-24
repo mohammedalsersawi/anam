@@ -12,6 +12,13 @@ use App\Http\Requests\StoreServiceRequest;
 
 class ServiceSectionController extends Controller
 {
+
+    public function getData()
+    {
+        $sections = ServiceSection::with(['features' , 'image'])->first();
+
+        return mainResponse(true, 'Service sections fetched.', compact('sections'), [], 200 ,null ,false);
+    }
     public function store(StoreServiceRequest $request)
     {
         try {

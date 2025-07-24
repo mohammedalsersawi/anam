@@ -19,11 +19,11 @@ class Feature extends Model
         'button_link',
     ];
 
-    public $translatable = ['sub_title', 'description' , 'button_text'];
+    public $translatable = ['sub_title', 'description', 'button_text'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     public function section()
     {
         return $this->morphTo();
     }
-
 }

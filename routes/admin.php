@@ -43,10 +43,15 @@ Route::group(
         Route::controller(\App\Http\Controllers\Api\Admin\LandPage\ServiceSectionController::class)->prefix('service')->group(function () {
             Route::post('/store', 'store');
             Route::post('/update/{id}', 'update');
-            Route::delete('destroy/{id}', 'destroy');
-            Route::get('/index', 'index');
-            Route::put('/updateStatus/{id}', 'updateStatus');
+            Route::get('/getData', 'getData');
         });
+        // Route::controller(\App\Http\Controllers\Api\Admin\LandPage\ServiceSectionController::class)->prefix('service')->group(function () {
+        //     Route::post('/store', 'store');
+        //     Route::post('/update/{id}', 'update');
+        //     Route::delete('destroy/{id}', 'destroy');
+        //     Route::get('/index', 'index');
+        //     Route::put('/updateStatus/{id}', 'updateStatus');
+        // });
         Route::controller(\App\Http\Controllers\Api\Admin\Category\CategoryController::class)->prefix('category')->group(function () {
             Route::post('/store', 'store');
             Route::post('/update/{id}', 'update');
@@ -71,9 +76,18 @@ Route::group(
         Route::controller(\App\Http\Controllers\Api\Admin\LandPage\FeatureController::class)->prefix('features')->group(function () {
             Route::post('/store', 'store');
             Route::post('/update/{id}', 'update');
-            Route::delete('destroy/{id}', 'destroy');
-            Route::get('/index', 'index');
-            Route::put('/updateStatus/{id}', 'updateStatus');
+            Route::get('/getData', 'getData');
+        });
+        Route::controller(\App\Http\Controllers\Api\Admin\ContactInfo\ContactInfoController::class)->prefix('contactInfo')->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::get('/getData', 'getData');
+        });
+        Route::controller(\App\Http\Controllers\Api\Admin\ContactMessage\ContactMessageController::class)->prefix('contactInfo')->group(function () {
+            Route::get('/getMessages', 'getMessages');
         });
     }
 );
+
+
+
