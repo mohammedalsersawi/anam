@@ -41,7 +41,7 @@ class AuthController extends Controller
             'password'  => Hash::make($data['password']),
         ]);
         $token = $admin->createToken('api')->plainTextToken;
-        return mainResponse(true, 'Admin created successfully', compact('token'), [], 101);
+        return mainResponse(true, 'Admin created successfully', compact('token'), [], 202);
     }
 
 
@@ -67,7 +67,7 @@ class AuthController extends Controller
             return mainResponse(false, 'The password is incorrect', [], [], 401);
         }
         $token = $admin->createToken('api')->plainTextToken;
-        return mainResponse(true, 'Admin created successfully', compact('token'), [], 101);
+        return mainResponse(true, 'Admin created successfully', compact('token'), [], 202);
     }
 
 

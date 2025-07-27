@@ -93,3 +93,30 @@ Route::group(
         });
     }
 );
+
+
+
+
+Route::group(
+    [
+        'prefix' => 'admin/blog',
+        'middleware' => ['localizationRedirect', 'localeViewPath']
+    ],
+    function () {
+        Route::controller(\App\Http\Controllers\Api\Admin\blog\BlogCategory\BlogCategoryController::class)->prefix('category')->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::delete('destroy/{id}', 'destroy');
+            Route::get('/index', 'index');
+            Route::put('/updateStatus/{id}', 'updateStatus');
+        });
+        Route::controller(\App\Http\Controllers\Api\Admin\blog\BlogArticle\BlogArticleController::class)->prefix('article')->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::delete('destroy/{id}', 'destroy');
+            Route::get('/index', 'index');
+            Route::put('/updateStatus/{id}', 'updateStatus');
+        });
+
+    }
+);

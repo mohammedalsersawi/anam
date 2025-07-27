@@ -380,3 +380,19 @@ function formatTranslatableData($model, array $translatableFields, array $extraF
 
     return $data;
 }
+
+
+
+function generateLocalizedSlugs(array $names, $separator = '-')
+{
+    $slugs = [];
+    foreach ($names as $locale => $value) {
+        $slug = trim($value);
+        $slug = mb_strtolower($slug, 'UTF-8');
+        $slug = preg_replace('/[^\p{Arabic}a-z0-9\s\-]+/u', '', $slug);
+        $slug = preg_replace('/[\s\-]+/u', $separator, $slug);
+        $slug = trim($slug, $separator);
+        $slugs[$locale] = $slug;
+    }
+    return $slugs;
+}

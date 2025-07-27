@@ -28,4 +28,15 @@ Route::prefix('{locale}')->middleware(['localeViewPath'])->group(function () {
         });
 });
 
+Route::controller()
+    ->prefix('article')
+    ->group(function () {
+        Route::post('comment/store', 'store');
+        Route::get('/SuccessStorie', 'SuccessStorie');
+    });
+Route::prefix('blog/article')->group(function () {
+    Route::post('comment/store', [\App\Http\Controllers\Api\Admin\blog\BlogInteractions\ArticleCommentController::class, 'store']);
+    Route::post('like/store', [\App\Http\Controllers\Api\Admin\blog\BlogInteractions\ArticleCommentController::class, 'store']);
+});
+
 require base_path('routes/admin.php');
