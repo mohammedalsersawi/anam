@@ -34,9 +34,12 @@ Route::controller()
         Route::post('comment/store', 'store');
         Route::get('/SuccessStorie', 'SuccessStorie');
     });
-Route::prefix('blog/article')->group(function () {
-    Route::post('comment/store', [\App\Http\Controllers\Api\Admin\blog\BlogInteractions\ArticleCommentController::class, 'store']);
-    Route::post('like/store', [\App\Http\Controllers\Api\Admin\blog\BlogInteractions\ArticleCommentController::class, 'store']);
-});
 
+Route::prefix('blog/article')->group(function () {
+    Route::controller(\App\Http\Controllers\Api\Admin\blog\BlogInteractions\InteractionController::class)
+        ->group(function () {
+            Route::post('comment/store', 'store');
+            Route::post('like/store', 'toggleLike');
+        });
+});
 require base_path('routes/admin.php');
