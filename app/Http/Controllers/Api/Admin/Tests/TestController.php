@@ -34,7 +34,6 @@ class TestController extends Controller
                 ['price', 'rating', 'questions_count', 'age_from', 'age_to', 'status', 'category_id', 'rating_count', 'created_by', 'updated_by']
             );
             $data['created_by'] = auth('admin')->id();
-            $data['updated_by'] = auth('admin')->id();
             $test = Test::create($data);
             if ($request->has('image')) {
                 UploadImage($request->image, Test::PATH_IMAGE, Test::class, $test->id, true, null, Upload::IMAGE);
@@ -55,7 +54,6 @@ class TestController extends Controller
                 ['title', 'description'],
                 ['price', 'rating', 'questions_count', 'age_from', 'age_to', 'status', 'category_id', 'rating_count', 'created_by', 'updated_by']
             );
-            $data['created_by'] = auth('admin')->id();
             $data['updated_by'] = auth('admin')->id();
             $test->update($data);
             if ($request->has('image')) {

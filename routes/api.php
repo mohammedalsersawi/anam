@@ -24,7 +24,7 @@ Route::prefix('{locale}')->middleware(['localeViewPath'])->group(function () {
     Route::controller(\App\Http\Controllers\Api\User\MainController::class)
         ->group(function () {
             Route::get('/heroSection', 'heroSection');
-            Route::get('/SuccessStorie', 'SuccessStorie');
+            Route::get('/homepageContent', 'homepageContent');
         });
     Route::prefix('blog')->controller(\App\Http\Controllers\Api\User\Blog\MainBlogController::class)
         ->group(function () {

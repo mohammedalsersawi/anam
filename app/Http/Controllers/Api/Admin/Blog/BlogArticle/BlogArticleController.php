@@ -38,13 +38,20 @@ class BlogArticleController extends Controller
             if (empty($data['slug']) || !is_array($data['slug'])) {
                 $data['slug'] = generateLocalizedSlugs($data['title']);
             }
-            // $data['created_by'] = 1;
+            $data['created_by'] = auth('admin')->id();
             $article = BlogArticle::create($data);
 
-            if ($request->hasFile('image')) {
-                UploadImage($request->file('image'), BlogArticle::PATH_IMAGE, BlogArticle::class, $article->id, true, null, Upload::IMAGE);
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $item) {
+                    UploadImage($item, BlogArticle::PATH_IMAGE, BlogArticle::class, $article->id, false, null, Upload::IMAGE);
+                }
             }
-            return mainResponse(true, 'Article created successfully.', compact('article'), [], 201);
+            if ($request->filled('keywords')) {
+                foreach ($request->keywords as $keywordData) {
+                    add_keyword($keywordData, $article->id, BlogArticle::class, auth('admin')->id());
+                }
+            }
+            return mainResponse(true, 'Article created successfully.', compact('article'), [], 201, null, false);
         } catch (\Exception $e) {
             return mainResponse(false, 'Something went wrong.', [], ['server' => [$e->getMessage()]], 500);
         }
@@ -63,9 +70,15 @@ class BlogArticleController extends Controller
             if (empty($data['slug']) || !is_array($data['slug'])) {
                 $data['slug'] = generateLocalizedSlugs($data['title']);
             }
+            $data['updated_by'] = auth('admin')->id();
             $article->update($data);
-            if ($request->hasFile('image')) {
-                UploadImage($request->file('image'), BlogArticle::PATH_IMAGE, BlogArticle::class, $article->id, true, null, Upload::IMAGE);
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $index => $item) {
+                    UploadImage($item, BlogArticle::PATH_IMAGE, BlogArticle::class, $article->id, false, null, Upload::IMAGE, null, $index == 0);
+                }
+            }
+            if ($request->filled('keywords')) {
+                sync_keywords($request->keywords, $article->id, \App\Models\BlogArticle::class, auth('admin')->id());
             }
             return mainResponse(true, 'Article updated successfully.', compact('article'), [], 200);
         } catch (\Exception $e) {

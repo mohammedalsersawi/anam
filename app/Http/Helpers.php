@@ -8,6 +8,9 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Arrayable;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
+use App\Models\BlogArticle;
+use App\Models\Keyword;
 
 function mainResponse($status, $msg, $items, $validator, $code = 200, $pages = null, $showPages = true)
 {
@@ -170,6 +173,36 @@ function UploadImage($file, $path = null, $model, $relation_id, $update = false,
 }
 
 
+function generateLocalizedSlugs(array $names, $separator = '-'): array
+{
+    $slugs = [];
+
+    foreach ($names as $locale => $value) {
+        // تنظيف وتوليد أولي
+        $slug = trim($value);
+        $slug = mb_strtolower($slug, 'UTF-8');
+        $slug = preg_replace('/[^\p{Arabic}a-zA-Z0-9\s\-]+/u', '', $slug); // أبقي الحروف اللاتينية
+        $slug = preg_replace('/[\s\-]+/u', $separator, $slug);
+        $slug = trim($slug, $separator);
+
+        $originalSlug = $slug;
+        $counter = 1;
+
+        // التحقق من التكرار في قاعدة البيانات
+        while (
+            BlogArticle::where("slug->{$locale}", $slug)->exists()
+        ) {
+            $slug = $originalSlug . $separator . $counter;
+            $counter++;
+        }
+
+        $slugs[$locale] = $slug;
+    }
+
+    return $slugs;
+}
+
+
 function UploadImageOld($file, $path = null, $model, $relation_id, $update = false, $id = null, $type, $name = null)
 {
     try {
@@ -304,12 +337,34 @@ function formatLocalizedDate($datetime, $locale = 'ar')
     Carbon::setLocale($locale);
 
     $months = [
-        'en' => [1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
-                 5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
-                 9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'],
-        'ar' => [1 => 'كانون الثاني', 2 => 'شباط', 3 => 'آذار', 4 => 'نيسان',
-                 5 => 'أيار', 6 => 'حزيران', 7 => 'تموز', 8 => 'آب',
-                 9 => 'أيلول', 10 => 'تشرين الأول', 11 => 'تشرين الثاني', 12 => 'كانون الأول'],
+        'en' => [
+            1 => 'January',
+            2 => 'February',
+            3 => 'March',
+            4 => 'April',
+            5 => 'May',
+            6 => 'June',
+            7 => 'July',
+            8 => 'August',
+            9 => 'September',
+            10 => 'October',
+            11 => 'November',
+            12 => 'December'
+        ],
+        'ar' => [
+            1 => 'كانون الثاني',
+            2 => 'شباط',
+            3 => 'آذار',
+            4 => 'نيسان',
+            5 => 'أيار',
+            6 => 'حزيران',
+            7 => 'تموز',
+            8 => 'آب',
+            9 => 'أيلول',
+            10 => 'تشرين الأول',
+            11 => 'تشرين الثاني',
+            12 => 'كانون الأول'
+        ],
     ];
 
     $carbonDate = Carbon::parse($datetime);
@@ -423,3 +478,67 @@ function formatTranslatableData($model, array $translatableFields, array $extraF
 
     return $data;
 }
+
+
+
+
+/**
+ * إضافة كلمة مفتاحية مترجمة إلى جدول keywords.
+ *
+ * @param array $translatedNames  مثال: ['ar' => 'برمجة', 'en' => 'Programming']
+ * @param int $sectionId          رقم العنصر المرتبط (ID)
+ * @param string $sectionType     نوع الكيان المرتبط (مثل App\Models\BlogArticle::class)
+ * @param int $adminId            رقم الأدمن الذي أضاف الكلمة
+ * @return \App\Models\Keyword|null
+ */
+function add_keyword(array $translatedNames, int $sectionId, string $sectionType, int $adminId): ?Keyword
+{
+    $existing = Keyword::where('section_id', $sectionId)
+        ->where('section_type', $sectionType)
+        ->get()
+        ->first(function ($keyword) use ($translatedNames) {
+            foreach ($translatedNames as $locale => $value) {
+                if ($keyword->getTranslation('name', $locale, false) !== $value) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+    if ($existing) {
+        return $existing;
+    }
+    $keyword = new Keyword();
+    $keyword->setTranslations('name', $translatedNames);
+    $keyword->section_id = $sectionId;
+    $keyword->section_type = $sectionType;
+    $keyword->created_by = $adminId;
+    $keyword->save();
+    return $keyword;
+}
+
+
+
+
+/**
+ * مزامنة الكلمات المفتاحية: حذف القديمة وإضافة الجديدة.
+ *
+ * @param array $keywordsArray  مثال: [['ar' => 'برمجة', 'en' => 'Programming'], ['ar' => 'ويب', 'en' => 'Web']]
+ * @param int $sectionId
+ * @param string $sectionType
+ * @param int $adminId
+ * @return void
+ */
+function sync_keywords(array $keywordsArray, int $sectionId, string $sectionType, int $adminId): void
+{
+    // حذف الكلمات المفتاحية القديمة المرتبطة بنفس العنصر
+    Keyword::where('section_id', $sectionId)
+        ->where('section_type', $sectionType)
+        ->delete();
+
+    // إضافة الكلمات الجديدة
+    foreach ($keywordsArray as $keywordTranslation) {
+        add_keyword($keywordTranslation, $sectionId, $sectionType, $adminId);
+    }
+}
+

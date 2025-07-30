@@ -32,7 +32,17 @@ class StoreBlogArticle extends FormRequest
         })->merge([
             'blog_category_id' => 'required|exists:blog_categories,id',
             'status'           => 'required|in:0,1',
-            'image'            => 'required|image',
-        ])->all();
+            'images'     => 'required|array|min:2',
+            'images.*' => 'image',
+
+            'keywords'         => 'nullable|array',
+            'keywords.*'       => 'required|array',
+        ])->merge(
+            collect(locales())->flatMap(function ($value, $key) {
+                return [
+                    'keywords.*.' . $key => 'required|string|max:255',
+                ];
+            })
+        )->all();
     }
 }

@@ -104,7 +104,7 @@ Route::group(
 Route::group(
     [
         'prefix' => 'admin/blog',
-        'middleware' => ['localizationRedirect', 'localeViewPath']
+        'middleware' => ['localizationRedirect', 'localeViewPath' ,'auth:sanctum']
     ],
     function () {
         Route::controller(\App\Http\Controllers\Api\Admin\blog\BlogCategory\BlogCategoryController::class)->prefix('category')->group(function () {

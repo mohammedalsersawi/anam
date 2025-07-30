@@ -13,7 +13,7 @@ class BlogArticle extends Model
 {
     use HasFactory, HasTranslations;
 
-    const PATH_IMAGE = "/upload/Blog/Article";
+    const PATH_IMAGE = "/upload/Blog/Article/";
 
     protected $hidden = ['created_at', 'updated_at'];
 
@@ -29,6 +29,8 @@ class BlogArticle extends Model
         'meta_description',
         'meta_title',
         'slug',
+        'created_by',
+        'updated_by',
     ];
 
     public function category()

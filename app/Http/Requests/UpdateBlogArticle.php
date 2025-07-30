@@ -32,7 +32,8 @@ class UpdateBlogArticle extends FormRequest
         })->merge([
             'blog_category_id' => 'required|exists:blog_categories,id',
             'status'           => 'required|in:0,1',
-            'image'            => 'nullable|image',
+            'images'     => 'nullable|array|min:2',
+            'images.*'   => 'image',
         ])->all();
     }
 }
