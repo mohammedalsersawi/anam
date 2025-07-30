@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Arrayable;
+use Carbon\Carbon;
 
 function mainResponse($status, $msg, $items, $validator, $code = 200, $pages = null, $showPages = true)
 {
@@ -298,6 +299,29 @@ if (!function_exists('localizedRequestData')) {
 }
 
 
+function formatLocalizedDate($datetime, $locale = 'ar')
+{
+    Carbon::setLocale($locale);
+
+    $months = [
+        'en' => [1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
+                 5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
+                 9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'],
+        'ar' => [1 => 'كانون الثاني', 2 => 'شباط', 3 => 'آذار', 4 => 'نيسان',
+                 5 => 'أيار', 6 => 'حزيران', 7 => 'تموز', 8 => 'آب',
+                 9 => 'أيلول', 10 => 'تشرين الأول', 11 => 'تشرين الثاني', 12 => 'كانون الأول'],
+    ];
+
+    $carbonDate = Carbon::parse($datetime);
+    $monthNum = (int)$carbonDate->format('n');
+    $day = $carbonDate->format('j');
+    $year = $carbonDate->format('Y');
+
+    $monthName = $months[$locale][$monthNum] ?? $carbonDate->format('F');
+
+    return "$day $monthName $year";
+}
+
 
 
 /**
@@ -309,6 +333,7 @@ if (!function_exists('localizedRequestData')) {
  * @param array $relationsMap علاقات بصيغة ['image' => 'image', 'features' => 'features']
  * @return array
  */
+
 function formatTranslatableData($model, array $translatableFields, array $extraFields = [], array $relationsMap = []): array
 {
     $locale = app()->getLocale();
@@ -323,31 +348,35 @@ function formatTranslatableData($model, array $translatableFields, array $extraF
         }
     }
 
-    // ✅ الحقول العادية
+    // ✅ الحقول العادية + تنسيق التاريخ
     foreach ($extraFields as $field) {
-        $data[$field] = $model->$field ?? null;
+        if (in_array($field, ['created_at', 'updated_at']) && $model->$field) {
+            $data[$field] = formatLocalizedDate($model->$field, $locale);
+        } else {
+            $data[$field] = $model->$field ?? null;
+        }
     }
 
     // ✅ العلاقات
-    foreach ($relationsMap as $relationName => $outputField) {
+    foreach ($relationsMap as $relationKey => $outputField) {
+        // دعم: relation أو relation.field
+        $parts = explode('.', $relationKey);
+        $relationName = $parts[0];
+        $specificField = $parts[1] ?? null;
+
         $relation = $model->$relationName ?? null;
 
+        // ✅ علاقة hasMany
         if ($relation instanceof \Illuminate\Support\Collection) {
             $data[$outputField] = $relation->map(function ($item) use ($locale) {
-                // 1️⃣ formatForApi إن وجد
                 if (method_exists($item, 'formatForApi')) {
                     return $item->formatForApi();
-                }
-
-                // 2️⃣ path (مثلاً صور)
-                if (isset($item->path)) {
+                } elseif (isset($item->path)) {
                     return asset('storage/' . $item->path);
                 }
 
-                // 3️⃣ الترجمة الذكية
                 $result = [];
 
-                // ✅ الحقول المترجمة لو كانت موجودة
                 if (property_exists($item, 'translatable') && is_array($item->translatable)) {
                     foreach ($item->translatable as $field) {
                         if (method_exists($item, 'getTranslation')) {
@@ -356,7 +385,6 @@ function formatTranslatableData($model, array $translatableFields, array $extraF
                     }
                 }
 
-                // ✅ باقي الحقول العادية
                 foreach ($item->getAttributes() as $key => $value) {
                     if (!array_key_exists($key, $result) && $key !== 'pivot') {
                         $result[$key] = $value;
@@ -365,12 +393,27 @@ function formatTranslatableData($model, array $translatableFields, array $extraF
 
                 return $result;
             })->toArray();
+
+            // ✅ علاقة belongsTo
         } elseif ($relation instanceof \Illuminate\Database\Eloquent\Model) {
-            if (method_exists($relation, 'formatForApi')) {
+            // حقل معين فقط من العلاقة
+            if ($specificField) {
+                if (method_exists($relation, 'getTranslation')) {
+                    $data[$outputField] = $relation->getTranslation($specificField, $locale);
+                } else {
+                    $data[$outputField] = $relation->$specificField ?? null;
+                }
+            }
+            // كائن كامل باستخدام formatForApi
+            elseif (method_exists($relation, 'formatForApi')) {
                 $data[$outputField] = $relation->formatForApi();
-            } elseif (isset($relation->path)) {
+            }
+            // صورة داخل العلاقة
+            elseif (isset($relation->path)) {
                 $data[$outputField] = asset('storage/' . $relation->path);
-            } else {
+            }
+            // الكائن كما هو
+            else {
                 $data[$outputField] = $relation;
             }
         } else {
@@ -379,20 +422,4 @@ function formatTranslatableData($model, array $translatableFields, array $extraF
     }
 
     return $data;
-}
-
-
-
-function generateLocalizedSlugs(array $names, $separator = '-')
-{
-    $slugs = [];
-    foreach ($names as $locale => $value) {
-        $slug = trim($value);
-        $slug = mb_strtolower($slug, 'UTF-8');
-        $slug = preg_replace('/[^\p{Arabic}a-z0-9\s\-]+/u', '', $slug);
-        $slug = preg_replace('/[\s\-]+/u', $separator, $slug);
-        $slug = trim($slug, $separator);
-        $slugs[$locale] = $slug;
-    }
-    return $slugs;
 }

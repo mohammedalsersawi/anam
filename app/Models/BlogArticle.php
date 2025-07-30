@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Upload;
+use App\Models\BlogCategory;
 use App\Models\BlogInteraction;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
@@ -16,7 +17,7 @@ class BlogArticle extends Model
 
     protected $hidden = ['created_at', 'updated_at'];
 
-    protected $translatable = ['title', 'excerpt', 'content', 'meta_title', 'meta_description' ,'slug'];
+    protected $translatable = ['title', 'excerpt', 'content', 'meta_title', 'meta_description', 'slug'];
 
     protected $fillable = [
         'title',
@@ -53,5 +54,9 @@ class BlogArticle extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+    public function images()
+    {
+        return $this->morphOne(Upload::class, 'relation')->select('id', 'path', 'relation_id', 'relation_type');
     }
 }
