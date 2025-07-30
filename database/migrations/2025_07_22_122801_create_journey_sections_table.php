@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->text('title');
             $table->text('description');
+            $table->foreignId('created_by')->nullable()->constrained('admins')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('admins')->nullOnDelete();
             $table->timestamps();
         });
     }

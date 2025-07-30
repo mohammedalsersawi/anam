@@ -17,6 +17,8 @@ return new class extends Migration
                 ->constrained('journey_sections')
                 ->onDelete('cascade');
             $table->text('feature');
+            $table->foreignId('created_by')->nullable()->constrained('admins')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('admins')->nullOnDelete();
             $table->timestamps();
         });
     }

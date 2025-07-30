@@ -17,11 +17,9 @@ class TestController extends Controller
         try {
             $tests = Test::orderBy('created_at', 'desc')
                 ->paginate(10);
-
             if ($tests->isEmpty()) {
                 return mainResponse(false, 'No active services found.', [], [], 404, null, false);
             }
-
             return mainResponse(true, 'Fetched category sections successfully.', compact('tests'), [], 200);
         } catch (\Exception $e) {
             return mainResponse(false, 'Failed to fetch service sections.', [], ['server' => [$e->getMessage()]], 500, null, false);
@@ -33,8 +31,10 @@ class TestController extends Controller
             $data = localizedRequestData(
                 $request,
                 ['title', 'description'],
-                ['price', 'rating', 'questions_count', 'age_from', 'age_to', 'status', 'category_id', 'rating_count']
+                ['price', 'rating', 'questions_count', 'age_from', 'age_to', 'status', 'category_id', 'rating_count', 'created_by', 'updated_by']
             );
+            $data['created_by'] = auth('admin')->id();
+            $data['updated_by'] = auth('admin')->id();
             $test = Test::create($data);
             if ($request->has('image')) {
                 UploadImage($request->image, Test::PATH_IMAGE, Test::class, $test->id, true, null, Upload::IMAGE);
@@ -53,15 +53,14 @@ class TestController extends Controller
             $data = localizedRequestData(
                 $request,
                 ['title', 'description'],
-                ['price', 'rating', 'questions_count', 'age_from', 'age_to', 'status', 'category_id', 'rating_count']
+                ['price', 'rating', 'questions_count', 'age_from', 'age_to', 'status', 'category_id', 'rating_count', 'created_by', 'updated_by']
             );
-
+            $data['created_by'] = auth('admin')->id();
+            $data['updated_by'] = auth('admin')->id();
             $test->update($data);
-
             if ($request->has('image')) {
                 UploadImage($request->image, Test::PATH_IMAGE, Test::class, $test->id, true, null, Upload::IMAGE);
             }
-
             return mainResponse(true, 'Test updated successfully.', compact('test'), [], 200, null, false);
         } catch (\Exception $e) {
             return mainResponse(false, 'Something went wrong.', [], ['server' => [$e->getMessage()]], 500, null, false);

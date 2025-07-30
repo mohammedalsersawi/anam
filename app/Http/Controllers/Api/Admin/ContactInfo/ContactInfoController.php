@@ -28,6 +28,7 @@ class ContactInfoController extends Controller
                 ['title', 'sub_title', 'description', 'sub_description', 'address'],
                 ['email', 'phone', 'phone_alt', 'whatsapp', 'facebook', 'instagram', 'youtube']
             );
+            $data['created_by'] = auth('admin')->id();
             $contactInfo = ContactInfo::create($data);
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $item) {
@@ -50,6 +51,7 @@ class ContactInfoController extends Controller
                 ['title', 'sub_title', 'description', 'sub_description', 'address'],
                 ['email', 'phone', 'phone_alt', 'whatsapp', 'facebook', 'instagram', 'youtube']
             );
+            $data['updated_by'] = auth('admin')->id();
             $contactInfo->update($data);
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $index => $item) {

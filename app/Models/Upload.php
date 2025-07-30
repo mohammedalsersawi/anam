@@ -10,16 +10,21 @@ class Upload extends Model
     use HasFactory;
 
     public function relation()
-{
-    return $this->morphTo(__FUNCTION__, 'relation_type', 'relation_id');
-}
+    {
+        return $this->morphTo(__FUNCTION__, 'relation_type', 'relation_id');
+    }
 
     protected $guarded = [];
-    protected $hidden = ['type', 'created_at', 'updated_at' , 'relation_id' , 'relation_type' ,'extension' , 'filename' , 'name'];
+    protected $hidden = ['type', 'created_at', 'updated_at', 'relation_id', 'relation_type', 'extension', 'filename', 'name'];
 
     const IMAGE = 1;
     const VIDEO = 2;
     const VOICE = 3;
     const LOCATION = 4;
     const ATTACHMENT = 4;
+
+    public function getFullOriginalPathAttribute()
+    {
+        return $this->path ? asset('storage/' . $this->path) : null;
+    }
 }

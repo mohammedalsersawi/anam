@@ -18,7 +18,8 @@ return new class extends Migration
             $table->text('excerpt')->nullable();
             $table->longText('content');
             $table->foreignId('blog_category_id')->constrained('blog_categories')->onDelete('cascade');;
-            // $table->foreignId('created_by')->constrained('admins')->onDelete('cascade');
+            $table->foreignId('created_by')->constrained('admins')->onDelete('cascade');
+            $table->foreignId('updated_by')->nullable()->constrained('admins')->nullOnDelete();
             $table->integer('views')->default(0);
             $table->tinyInteger('status')->default(1);
             $table->string('meta_title')->nullable();

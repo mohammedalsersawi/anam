@@ -26,6 +26,7 @@ class SuccessStorieController extends Controller
                 ['title',],
                 ['url_video']
             );
+            $data['created_by'] = auth('admin')->id();
             $successStorie = SuccessStorie::create($data);
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $item) {
@@ -47,6 +48,7 @@ class SuccessStorieController extends Controller
                 ['title'],
                 ['url_video']
             );
+            $data['updated_by'] = auth('admin')->id();
             $successStorie->update($data);
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $index => $item) {

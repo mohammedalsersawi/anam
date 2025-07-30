@@ -17,6 +17,8 @@ class Feature extends Model
         'icon',
         'button_text',
         'button_link',
+        'created_by',
+        'updated_by',
     ];
 
     public $translatable = ['sub_title', 'description', 'button_text'];

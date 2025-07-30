@@ -33,6 +33,7 @@ class CourseController extends Controller
                 ['title', 'description'],
                 ['price', 'rating', 'rating_count', 'hours', 'age_from', 'age_to', 'status', 'category_id'] // الحقول العادية
             );
+            $data['created_by'] = auth('admin')->id();
             $course = Course::create($data);
             if ($request->has('image')) {
                 UploadImage($request->image, Course::PATH_IMAGE, Course::class, $course->id, true, null, Upload::IMAGE);
@@ -51,6 +52,7 @@ class CourseController extends Controller
                 ['title', 'description'],
                 ['price', 'rating', 'rating_count', 'hours', 'age_from', 'age_to', 'status', 'category_id'] // الحقول العادية
             );
+            $data['updated_by'] = auth('admin')->id();
             $course->update($data);
 
             if ($request->has('image')) {

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('button_text')->nullable();
             $table->string('button_link')->nullable();
             $table->string('status', 1)->default(1);
+            $table->foreignId('created_by')->nullable()->constrained('admins')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('admins')->nullOnDelete();
             $table->timestamps();
         });
     }

@@ -5,14 +5,14 @@ use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::prefix('auth')->group(function () {
-    Route::post('/login', [\App\Http\Controllers\User\Auth\AuthController::class, 'login']);
-    Route::post('/register', [\App\Http\Controllers\User\Auth\AuthController::class, 'register']);
-    Route::post('/forgot-password', [\App\Http\Controllers\User\Auth\AuthController::class, 'sendResetLinkEmail']);
-    Route::post('/reset-password', [\App\Http\Controllers\User\Auth\AuthController::class, 'resetPassword']);
+    Route::post('/login', [\App\Http\Controllers\Api\Auth\User\AuthController::class, 'login']);
+    Route::post('/register', [\App\Http\Controllers\Api\Auth\User\AuthController::class, 'register']);
+    Route::post('/forgot-password', [\App\Http\Controllers\Api\Auth\User\AuthController::class, 'sendResetLinkEmail']);
+    Route::post('/reset-password', [\App\Http\Controllers\Api\Auth\User\AuthController::class, 'resetPassword']);
 
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout', [\App\Http\Controllers\User\Auth\AuthController::class, 'logout']);
+        Route::post('/logout', [\App\Http\Controllers\Api\Auth\User\AuthController::class, 'logout']);
     });
 });
 

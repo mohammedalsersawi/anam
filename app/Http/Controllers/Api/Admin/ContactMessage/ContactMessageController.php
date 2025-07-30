@@ -41,6 +41,6 @@ class ContactMessageController extends Controller
             return mainResponse(false, 'No active services found.', [], [], 404, null, false);
         }
 
-        return mainResponse(true, 'Message sections fetched.', compact('getMessages'), [], 200);
+        return mainResponse(true, 'Message sections fetched.', compact('getMessages'), [], 200 , null ,false);
     }
 }

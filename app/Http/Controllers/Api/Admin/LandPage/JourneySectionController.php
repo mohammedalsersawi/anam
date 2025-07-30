@@ -16,7 +16,7 @@ class JourneySectionController extends Controller
     public function index()
     {
         try {
-            $journeys = JourneySection::with(['features' ,'images'])
+            $journeys = JourneySection::with(['features', 'images'])
                 ->latest()
                 ->paginate(10);
 
@@ -54,6 +54,7 @@ class JourneySectionController extends Controller
                 $data['title'][$key] = $request->get('title_' . $key);
                 $data['description'][$key] = $request->get('description_' . $key);
             }
+            $data['created_by'] =  auth('admin')->id();
             $journe = JourneySection::create($data);
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $item) {
@@ -72,6 +73,7 @@ class JourneySectionController extends Controller
                             JourneyFeature::create([
                                 'journey_section_id' => $journe->id,
                                 'feature' => $dataFeature,
+                                'created_by' => auth('admin')->id(),
                             ]);
                         }
                     }
@@ -107,6 +109,7 @@ class JourneySectionController extends Controller
                 $data['title'][$key] = $request->get('title_' . $key);
                 $data['description'][$key] = $request->get('description_' . $key);
             }
+            $data['updated_by'] =  auth('admin')->id();
             $journe->update($data);
             if ($request->hasFile('images')) {
                 $oldImages = Upload::where('relation_id', $journe->id)
@@ -135,6 +138,7 @@ class JourneySectionController extends Controller
                         JourneyFeature::create([
                             'journey_section_id' => $journe->id,
                             'feature' => $dataFeature,
+                            'created_by' => auth('admin')->id(),
                         ]);
                     }
                 }

@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug');
             $table->text('description')->nullable();
-            // $table->foreignId('created_by')->constrained('admins')->onDelete('cascade');
+            $table->foreignId('created_by')->nullable()->constrained('admins')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('admins')->nullOnDelete();
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });

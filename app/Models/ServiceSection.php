@@ -23,6 +23,8 @@ class ServiceSection extends Model
         'button_link',
         'status',
         'icon',
+        'created_by',
+        'updated_by',
     ];
     const PATH_IMAGE = "/upload/Services/";
 
@@ -35,6 +37,6 @@ class ServiceSection extends Model
 
      public function image()
     {
-        return $this->morphOne(Upload::class, 'relation')->select('id', 'path', 'relation_id', 'relation_type');
+        return $this->morphOne(Upload::class, 'relation')->select('id', 'path', 'relation_id', 'relation_type' ,'full_original_path');
     }
 }

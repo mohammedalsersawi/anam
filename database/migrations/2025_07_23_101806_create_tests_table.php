@@ -23,6 +23,8 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1);
             $table->integer('rating_count')->nullable();
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('created_by')->nullable()->constrained('admins')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('admins')->nullOnDelete();
             $table->timestamps();
         });
     }

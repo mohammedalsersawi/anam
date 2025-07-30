@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('feature_sections', function (Blueprint $table) {
             $table->id();
             $table->text('title');
+            $table->foreignId('created_by')->nullable()->constrained('admins')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('admins')->nullOnDelete();
             $table->timestamps();
         });
     }

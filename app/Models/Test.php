@@ -24,6 +24,8 @@ class Test extends Model
         'status',
         'rating_count',
         'category_id',
+        'created_by',
+        'updated_by',
     ];
 
     public function image()

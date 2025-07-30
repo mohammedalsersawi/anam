@@ -14,7 +14,9 @@ class FeatureSection extends Model
 
     protected $fillable = [
         'title',
-        'status'
+        'status',
+        'created_by',
+        'updated_by',
     ];
     protected $translatable = ['title'];
     protected $hidden = ['created_at', 'updated_at'];

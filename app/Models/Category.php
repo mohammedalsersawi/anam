@@ -14,10 +14,11 @@ class Category extends Model
         'name',
         'status',
         'type',
+        'created_by',
+        'updated_by',
     ];
     protected $hidden = ['created_at', 'updated_at'];
     protected $casts = [
-    'name' => 'array',
-];
-
+        'name' => 'array',
+    ];
 }

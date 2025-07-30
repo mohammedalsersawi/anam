@@ -12,7 +12,7 @@ class HeroSection extends Model
     use HasFactory, HasTranslations;
 
     protected $translatable = ['title', 'description', 'button_text',];
-    protected $fillable = ['title', 'description', 'button_text', 'button_link', 'status'];
+    protected $fillable = ['title', 'description', 'button_text', 'button_link', 'status' ,'created_by' ,'updated_by'];
     protected $hidden = ['created_at', 'updated_at' ,'button_link'];
 
     public function imageHero()

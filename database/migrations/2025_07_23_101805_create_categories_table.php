@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->integer('type')->comment('1 = test, 2 = course , 3= store');
             $table->tinyInteger('status')->default(1);
+            $table->foreignId('created_by')->nullable()->constrained('admins')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('admins')->nullOnDelete();
             $table->timestamps();
         });
     }

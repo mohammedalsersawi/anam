@@ -15,7 +15,7 @@ class FeatureController extends Controller
 
     public function getData()
     {
-        $sections = FeatureSection::with(['features' , 'image'])->first();
+        $sections = FeatureSection::with(['features', 'image'])->first();
 
         return mainResponse(true, 'Feature sections fetched.', compact('sections'), [], 200, null, false);
     }
@@ -29,8 +29,10 @@ class FeatureController extends Controller
             $data = [
                 'title' => [
                     'ar' => $title_ar,
+                    'created_by' => auth('admin')->id(),
                     'en' => $title_en,
                 ],
+                'created_by' => auth('admin')->id(),
             ];
             $featureSection = FeatureSection::create($data);
             if ($request->hasFile('image')) {
@@ -44,6 +46,7 @@ class FeatureController extends Controller
                     'description'  => $item['description'] ?? [],
                     'icon'         => $item['icon'] ?? null,
                     'button_text'  => $item['button_text'] ?? [],
+                    'created_by'  => auth('admin')->id(),
                 ]);
             }
             return mainResponse(true, 'Service section created successfully.', compact('featureSection'), [], 201);
@@ -65,28 +68,17 @@ class FeatureController extends Controller
             $title_en = $request->input('title_en') ?? $request->json('title_en');
             $status   = $request->input('status') ?? $request->json('status');
             $items    = $request->input('items') ?? $request->json('items');
-
-            // تحديث بيانات FeatureSection
             $featureSection->update([
                 'title' => [
                     'ar' => $title_ar,
+                    'created_by' => auth('admin')->id(),
                     'en' => $title_en,
                 ],
+                'updated_by' => auth('admin')->id(),
             ]);
-
             if ($request->hasFile('image')) {
-                UploadImage(
-                    $request->file('image'),
-                    FeatureSection::PATH_IMAGE,
-                    FeatureSection::class,
-                    $featureSection->id,
-                    true,
-                    null,
-                    Upload::IMAGE
-                );
+                UploadImage($request->file('image'), FeatureSection::PATH_IMAGE, FeatureSection::class, $featureSection->id, true, null, Upload::IMAGE);
             }
-
-            // حذف العناصر القديمة المرتبطة بهذا القسم
             Feature::where('section_id', $featureSection->id)
                 ->where('section_type', FeatureSection::class)
                 ->delete();
@@ -99,6 +91,7 @@ class FeatureController extends Controller
                     'sub_title'    => $item['sub_title'] ?? [],
                     'description'  => $item['description'] ?? [],
                     'icon'         => $item['icon'] ?? null,
+                    'updated_by'  => auth('admin')->id(),
                 ]);
             }
             return mainResponse(true, 'Feature section updated successfully.', compact('featureSection'), [], 200);

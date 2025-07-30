@@ -23,6 +23,8 @@ return new class extends Migration
             $table->integer('age_from')->default(0);
             $table->integer('age_to')->default(0);
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('created_by')->nullable()->constrained('admins')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('admins')->nullOnDelete();
             $table->timestamps();
         });
     }

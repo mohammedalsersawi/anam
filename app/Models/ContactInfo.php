@@ -27,6 +27,8 @@ class ContactInfo extends Model
         'facebook',
         'instagram',
         'youtube',
+        'created_by',
+        'updated_by',
     ];
     public function images()
     {

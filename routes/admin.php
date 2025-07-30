@@ -4,20 +4,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
+
+Route::controller(\App\Http\Controllers\Api\Auth\Admin\AuthController::class)->group(function () {
+    Route::post('admin/login', 'login');
+    Route::post('admin/register', 'register');
+    Route::post('admin/logout', 'logout');
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('admin/logout', 'logout');
+    });
+});
+
+
 Route::group(
     [
         'prefix' => 'admin',
-        'middleware' => ['localizationRedirect', 'localeViewPath']
+        'middleware' => ['localizationRedirect', 'localeViewPath', 'auth:sanctum']
     ],
     function () {
-        Route::controller(\App\Http\Controllers\Api\Auth\Admin\AuthController::class)->group(function () {
-            Route::post('/login', 'login');
-            Route::post('/register', 'register');
-            Route::post('/logout', 'logout');
-            Route::middleware('auth:sanctum')->group(function () {
-                Route::post('/logout', 'logout');
-            });
-        });
 
         Route::controller(\App\Http\Controllers\Api\Admin\LandPage\NavigationLinkController::class)->prefix('navigationLink')->group(function () {
             Route::post('/store', 'store');
@@ -58,6 +61,7 @@ Route::group(
             Route::delete('destroy/{id}', 'destroy');
             Route::get('/index', 'index');
             Route::put('/updateStatus/{id}', 'updateStatus');
+            Route::get('/{type}', 'type');
         });
         Route::controller(\App\Http\Controllers\Api\Admin\Tests\TestController::class)->prefix('tests')->group(function () {
             Route::post('/store', 'store');
@@ -117,6 +121,5 @@ Route::group(
             Route::get('/index', 'index');
             Route::put('/updateStatus/{id}', 'updateStatus');
         });
-
     }
 );

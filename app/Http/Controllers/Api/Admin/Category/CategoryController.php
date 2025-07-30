@@ -14,16 +14,29 @@ class CategoryController extends Controller
         try {
             $categories = Category::orderBy('created_at', 'desc')
                 ->paginate(10);
-
             if ($categories->isEmpty()) {
                 return mainResponse(false, 'No active services found.', [], [], 404, null, false);
             }
-
-            return mainResponse(true, 'Fetched category sections successfully.', compact('services'), [], 200);
+            return mainResponse(true, 'Fetched category sections successfully.', compact('categories'), [], 200);
         } catch (\Exception $e) {
             return mainResponse(false, 'Failed to fetch service sections.', [], ['server' => [$e->getMessage()]], 500, null, false);
         }
     }
+    public function type($type_id)
+    {
+        try {
+            $categories = Category::where('type', $type_id)
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+            if ($categories->isEmpty()) {
+                return mainResponse(false, 'No categories found for this type.', [], [], 404, null, false);
+            }
+            return mainResponse(true, 'Fetched categories successfully.', compact('categories'), [], 200, null, true);
+        } catch (\Exception $e) {
+            return mainResponse(false, 'Failed to fetch categories.', [], ['server' => [$e->getMessage()]], 500, null, false);
+        }
+    }
+
     public function store(Request $request)
     {
         try {
@@ -43,6 +56,7 @@ class CategoryController extends Controller
             }
             $data['type'] = $request->type;
             $data['status'] = $request->status;
+            $data['created_by'] = auth('admin')->id();
             $category = Category::create($data);
             return mainResponse(true, 'Category section created successfully.', compact('category'), [], 201, null, false);
         } catch (\Exception $e) {
@@ -62,15 +76,19 @@ class CategoryController extends Controller
             if ($validator->fails()) {
                 return mainResponse(false, $validator->errors()->first(), [], $validator->errors()->messages(), 422, null, false);
             }
-            $category = Category::findOrFail($id);
+            $category = Category::find($id);
+            if (!$category) {
+                return mainResponse(false, 'Category not found.', [], ['id' => ['Invalid category ID']], 404, null, false);
+            }
             $data = [];
             foreach (locales() as $key => $language) {
                 $data['name'][$key] = $request->get('name_' . $key);
             }
             $data['type'] = $request->type;
             $data['status'] = $request->status;
+            $data['updated_by'] = auth('admin')->id();
             $category->update($data);
-            return mainResponse(true, 'Service section updated successfully.', compact('category'), [], 200, null, false);
+            return mainResponse(true, 'Category updated successfully.', compact('category'), [], 200, null, false);
         } catch (\Exception $e) {
             return mainResponse(false, 'Something went wrong.', [], ['server' => [$e->getMessage()]], 500, null, false);
         }

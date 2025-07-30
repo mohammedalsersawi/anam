@@ -23,6 +23,8 @@ class Course extends Model
         'age_from',
         'age_to',
         'category_id',
+        'created_by',
+        'updated_by',
     ];
 
 

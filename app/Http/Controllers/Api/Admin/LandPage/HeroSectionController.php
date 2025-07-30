@@ -52,7 +52,7 @@ class HeroSectionController extends Controller
                 $data['description'][$key] = $request->get('description_' . $key);
                 $data['button_text'][$key] = $request->get('button_text_' . $key);
             }
-            // $data['button_link'] = $request->button_link;
+            $data['created_by'] =  auth('api')->id();
             $hero = HeroSection::create($data);
             if ($request->has('image')) {
                 UploadImage($request->image, HeroSection::PATH_IMAGE, HeroSection::class, $hero->id, true, null, Upload::IMAGE);
@@ -89,7 +89,7 @@ class HeroSectionController extends Controller
                 $data['description'][$key] = $request->get('description_' . $key);
                 $data['button_text'][$key] = $request->get('button_text_' . $key);
             }
-            // $data['button_link'] = $request->button_link;
+            $data['updated_by'] =  auth('api')->id();
             $data['status'] = $request->status;
 
             $hero->update($data);
