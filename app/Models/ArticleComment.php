@@ -42,4 +42,9 @@ class ArticleComment extends Model
     {
         return $this->belongsTo(Admin::class);
     }
+    public function likes()
+{
+    return $this->morphMany(ArticleLike::class, 'likeable');
+}
+
 }

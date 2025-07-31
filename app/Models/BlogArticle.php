@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Upload;
+use App\Models\Keyword;
 use App\Models\BlogCategory;
 use App\Models\BlogInteraction;
 use Illuminate\Database\Eloquent\Model;
@@ -45,13 +46,19 @@ class BlogArticle extends Model
 
     public function comments()
     {
-        return $this->interactions()->where('type', 'comment');
+        return $this->hasMany(ArticleComment::class)->whereNull('parent_id')->with('replies');
     }
+    public function replies()
+    {
+        return $this->hasMany(ArticleComment::class, 'parent_id')->with('replies');
+    }
+
 
     public function likes()
     {
-        return $this->interactions()->where('type', 'like');
+        return $this->morphMany(ArticleLike::class, 'likeable');
     }
+
 
     public function creator()
     {
@@ -59,6 +66,11 @@ class BlogArticle extends Model
     }
     public function images()
     {
-        return $this->morphOne(Upload::class, 'relation')->select('id', 'path', 'relation_id', 'relation_type');
+        return $this->morphMany(Upload::class, 'relation')->select('id', 'path', 'relation_id', 'relation_type');
+    }
+
+    public function keywords()
+    {
+        return $this->morphMany(Keyword::class, 'section');
     }
 }

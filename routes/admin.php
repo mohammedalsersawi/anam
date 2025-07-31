@@ -95,6 +95,13 @@ Route::group(
             Route::post('/update/{id}', 'update');
             Route::get('/getData', 'getData');
         });
+         Route::controller(\App\Http\Controllers\Api\Admin\Activity\ActivityController::class)->prefix('activities')->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::delete('destroy/{id}', 'destroy');
+            Route::get('/index', 'index');
+            Route::put('/updateStatus/{id}', 'updateStatus');
+        });
     }
 );
 

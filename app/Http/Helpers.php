@@ -14,79 +14,51 @@ use App\Models\Keyword;
 
 function mainResponse($status, $msg, $items, $validator, $code = 200, $pages = null, $showPages = true)
 {
-    $item_with_paginate = $items;
-    if (gettype($items) == 'array') {
-        if (count($items)) {
-            $item_with_paginate = $items[array_key_first($items)];
-        }
-    }
-
-    if ($showPages && isset(json_decode(json_encode($item_with_paginate, true), true)['data'])) {
-        $pagination = json_decode(json_encode($item_with_paginate, true), true);
-        $new_items = $pagination['data'];
-        $pages = [
-            "current_page" => $pagination['current_page'],
-            "first_page_url" => $pagination['first_page_url'],
-            "from" => $pagination['from'],
-            "last_page" => $pagination['last_page'],
-            "last_page_url" => $pagination['last_page_url'],
-            "next_page_url" => $pagination['next_page_url'],
-            "path" => $pagination['path'],
-            "per_page" => $pagination['per_page'],
-            "prev_page_url" => $pagination['prev_page_url'],
-            "to" => $pagination['to'],
-            "total" => $pagination['total'],
-        ];
-    } elseif ($showPages) {
-        $pages = [
-            "current_page" => 0,
-            "first_page_url" => '',
-            "from" => 0,
-            "last_page" => 0,
-            "last_page_url" => '',
-            "next_page_url" => null,
-            "path" => '',
-            "per_page" => 0,
-            "prev_page_url" => null,
-            "to" => 0,
-            "total" => 0,
-        ];
-    }
-
-    if (gettype($items) == 'array') {
-        if (count($items)) {
-            $new_items = [];
-            foreach ($items as $key => $item) {
-                if (isset(json_decode(json_encode($item, true), true)['data'])) {
-                    $pagination = json_decode(json_encode($item, true), true);
-                    $new_items[$key] = $pagination['data'];
-                } else {
-                    $new_items[$key] = $item;
-                }
-                $items = $new_items;
-            }
-        }
-    } else {
-        if (isset(json_decode(json_encode($item_with_paginate, true), true)['data'])) {
-            $pagination = json_decode(json_encode($item_with_paginate, true), true);
-            $items = $pagination['data'];
-        }
-    }
-
     $aryErrors = [];
     foreach ($validator as $key => $value) {
         $aryErrors[] = ['field_name' => $key, 'messages' => $value];
     }
 
+    $processedItems = [];
+    $pagesCollection = [];
+
+    // مر على كل العناصر داخل $items
+    foreach ($items as $key => $item) {
+        $itemArray = json_decode(json_encode($item), true);
+
+        // إذا كان العنصر فيه pagination
+        if (isset($itemArray['data'], $itemArray['current_page'])) {
+            // نحفظ فقط الـ data داخل العنصر
+            $processedItems[$key] = $itemArray['data'];
+
+            // ونحط pagination الخاص به داخل pages[$key]
+            $pagesCollection[$key] = [
+                "current_page" => $itemArray['current_page'],
+                "first_page_url" => $itemArray['first_page_url'],
+                "from" => $itemArray['from'],
+                "last_page" => $itemArray['last_page'],
+                "last_page_url" => $itemArray['last_page_url'],
+                "next_page_url" => $itemArray['next_page_url'],
+                "path" => $itemArray['path'],
+                "per_page" => $itemArray['per_page'],
+                "prev_page_url" => $itemArray['prev_page_url'],
+                "to" => $itemArray['to'],
+                "total" => $itemArray['total'],
+            ];
+        } else {
+            $processedItems[$key] = $item;
+        }
+    }
+
     $newData = [
         'status' => $status,
         'message' => __($msg),
-        'data' => $items,
+        'data' => $processedItems,
         'errors' => $aryErrors
     ];
 
     if ($showPages) {
-        $newData['pages'] = $pages;
+        $newData['pages'] = $pagesCollection;
     }
 
     return response()->json($newData, $code);

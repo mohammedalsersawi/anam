@@ -26,21 +26,18 @@ Route::prefix('{locale}')->middleware(['localeViewPath'])->group(function () {
             Route::get('/heroSection', 'heroSection');
             Route::get('/homepageContent', 'homepageContent');
         });
+    Route::get('/activities',  [\App\Http\Controllers\Api\Admin\Activity\ActivityController::class, 'getActivities']);
     Route::prefix('blog')->controller(\App\Http\Controllers\Api\User\Blog\MainBlogController::class)
         ->group(function () {
             Route::get('/articles', 'getAllBlogSections');
             Route::get('/article/details/{id}', 'detailsArticle');
+            Route::get('/article/filtre/{id}', 'filtreArticle');
+            Route::get('/article/search', 'searchArticle');
         });
 });
 
-Route::controller()
-    ->prefix('article')
-    ->group(function () {
-        Route::post('comment/store', 'store');
-        Route::get('/SuccessStorie', 'SuccessStorie');
-    });
 
-Route::prefix('blog/article')->group(function () {
+Route::prefix('blog/article')->middleware('auth:sanctum')->group(function () {
     Route::controller(\App\Http\Controllers\Api\Admin\blog\BlogInteractions\InteractionController::class)
         ->group(function () {
             Route::post('comment/store', 'store');
