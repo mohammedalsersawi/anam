@@ -102,6 +102,21 @@ Route::group(
             Route::get('/index', 'index');
             Route::put('/updateStatus/{id}', 'updateStatus');
         });
+         Route::controller(\App\Http\Controllers\Api\Admin\AboutBlock\AboutBlockController::class)->prefix('aboutBlock')->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::delete('destroy/{id}', 'destroy');
+            Route::get('/index', 'index');
+            Route::put('/updateStatus/{id}', 'updateStatus');
+        });
+         Route::controller(\App\Http\Controllers\Api\Admin\Character\CharacterController::class)->prefix('character')->group(function () {
+            Route::post('/storehero', 'storehero');
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::delete('destroy/{id}', 'destroy');
+            Route::get('/index', 'index');
+            Route::put('/updateStatus/{id}', 'updateStatus');
+        });
     }
 );
 

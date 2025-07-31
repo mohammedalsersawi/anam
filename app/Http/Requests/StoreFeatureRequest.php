@@ -30,7 +30,7 @@ class StoreFeatureRequest extends FormRequest
             'image'  => 'required|image',
 
             // التحقق من أن items مصفوفة
-            'items' => 'required|array|min:1',
+
 
             // التحقق من كل عنصر داخل items
             'items.*.sub_title'   => 'required|array',
