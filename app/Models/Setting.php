@@ -7,6 +7,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Setting extends Model
 {
+
     use HasTranslations;
     protected $fillable = [
         'key',
